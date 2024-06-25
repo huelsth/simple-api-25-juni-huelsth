@@ -1,17 +1,14 @@
 from ninja import NinjaAPI
+from .models import Item
 
 api = NinjaAPI()
 
-@api.get("/hello")
-def hello(request):
-    return {"message": "Hello World"}
+@api.get("/items")
+def list_items(request):
+    items = Item.objects.all()
+    return [{"id": item.id, "name": item.name, "description": item.description} for item in items]
 
-# myproject/urls.py
-from django.contrib import admin
-from django.urls import path
-from api.views import api
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', api.urls),
-]
+@api.get("/items/{item_id}")
+def get_item(request, item_id: int):
+    item = Item.objects.get(id=item_id)
+    return {"id": item.id, "name": item.name, "description": item.description}
